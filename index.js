@@ -1,5 +1,7 @@
 import OpenAI from 'openai';
 import dotenv from 'dotenv';
+import express from 'express';
+import path from 'path';
 
 // Load environment variables
 dotenv.config();
@@ -39,17 +41,32 @@ async function fetchCompletion(openai, messages) {
   }
 }
 
-// Main function
-async function main() {
-  const openai = initializeOpenAI();
-  const messages = [
-    {
-      "role": "user",
-      "content": "What is the meaning of life?"
-    }
-  ];
-  const response = await fetchCompletion(openai, messages);
-  console.log(response);
-}
+// Initialize Express app
+const app = express();
+const port = process.env.PORT || 3000;
 
-main();
+// Serve static files (HTML/CSS)
+app.use(express.static(path.join(process.cwd(), 'public')));
+app.use(express.json());
+
+// Endpoint for chatbot messages
+app.post('/chat', async (req, res) => {
+  try {
+    const openai = initializeOpenAI();
+    const messages = req.body.messages;
+    const response = await fetchCompletion(openai, messages);
+    res.json({ reply: response.content });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch completion' });
+  }
+});
+
+// Serve index.html explicitly for the root URL
+app.get('/', (req, res) => {
+  res.sendFile(path.join(process.cwd(), 'public', 'index.html'));
+});
+
+// Start the server
+app.listen(port, () => {
+  console.log(`Server running at http://localhost:${port}`);
+});
