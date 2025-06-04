@@ -52,11 +52,14 @@ app.use(express.json());
 // Endpoint for chatbot messages
 app.post('/chat', async (req, res) => {
   try {
+    console.log("Received request:", req.body); // Log incoming request
     const openai = initializeOpenAI();
     const messages = req.body.messages;
     const response = await fetchCompletion(openai, messages);
+    console.log("API response:", response); // Log API response
     res.json({ reply: response.content });
   } catch (error) {
+    console.error("Error during API call:", error); // Log error details
     res.status(500).json({ error: 'Failed to fetch completion' });
   }
 });
