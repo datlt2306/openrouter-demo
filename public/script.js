@@ -8,6 +8,9 @@ chatForm.addEventListener('submit', async (e) => {
   addMessage('user', userMessage);
   userInput.value = '';
 
+  // Show typing indicator
+  const typingIndicator = addMessage('bot', 'Đang phản hồi...');
+  
   try {
     console.log("Sending message to server:", userMessage); // Log outgoing message
     const response = await fetch('/chat', {
@@ -17,9 +20,11 @@ chatForm.addEventListener('submit', async (e) => {
     });
     const data = await response.json();
     console.log("Received response from server:", data); // Log server response
+    typingIndicator.remove(); // Remove typing indicator
     addMessage('bot', data.reply);
   } catch (error) {
     console.error("Error during API call:", error); // Log error details
+    typingIndicator.remove(); // Remove typing indicator
     addMessage('bot', 'Error: Unable to fetch response.');
   }
 });
@@ -30,4 +35,5 @@ function addMessage(role, content) {
   messageDiv.textContent = content;
   chatBox.appendChild(messageDiv);
   chatBox.scrollTop = chatBox.scrollHeight;
+  return messageDiv; // Return the message element for further manipulation
 }

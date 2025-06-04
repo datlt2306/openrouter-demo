@@ -24,6 +24,11 @@ body {
   border-bottom: 1px solid #ddd;
 }
 
+.chat-box .bot-message.typing {
+  font-style: italic;
+  color: #888;
+}
+
 .chat-form {
   display: flex;
   padding: 10px;
